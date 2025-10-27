@@ -5,7 +5,6 @@
 #include <algorithm>
 #include "ofMain.h"
 
-
 class AwaitFrames {
 public:
 	AwaitFrames(int frames) : m_frames(frames), m_counter(0) {}

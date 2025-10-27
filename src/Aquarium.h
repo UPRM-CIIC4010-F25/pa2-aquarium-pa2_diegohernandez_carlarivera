@@ -93,6 +93,23 @@ public:
     void draw() const override;
 };
 
+// Power Up class and enum class for distinguishing between types of power ups
+enum class PowerUpType {
+    SpeedBoost
+};
+class PowerUp : public Creature {
+public:
+    PowerUp(float x, float y, std::shared_ptr<GameSprite> sprite, PowerUpType type);
+    void update();
+    void draw() const override;
+    void move() override;
+    void collect(std::shared_ptr<PlayerCreature> player);
+    bool shouldRemove() const;
+
+private:
+    PowerUpType m_type;
+    bool m_collected = false;
+};
 
 class AquariumSpriteManager {
     public:
@@ -103,7 +120,6 @@ class AquariumSpriteManager {
         std::shared_ptr<GameSprite> m_npc_fish;
         std::shared_ptr<GameSprite> m_big_fish;
 };
-
 
 class Aquarium{
 public:
@@ -123,7 +139,8 @@ public:
     int getCreatureCount() const { return m_creatures.size(); }
     int getWidth() const { return m_width; }
     int getHeight() const { return m_height; }
-
+    void SpawnPowerUp(); // Power Up method
+    std::vector<std::shared_ptr<PowerUp>> m_powerups; // Power Up vector
 
 private:
     int m_maxPopulation = 0;
@@ -158,6 +175,7 @@ class AquariumGameScene : public GameScene {
         std::shared_ptr<GameEvent> m_lastEvent;
         string m_name;
         AwaitFrames updateControl{5};
+        ofSoundPlayer m_music;
 };
 
 
