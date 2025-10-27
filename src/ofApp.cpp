@@ -8,6 +8,11 @@ void ofApp::setup(){
     backgroundImage.load("background.png");
     backgroundImage.resize(ofGetWindowWidth(), ofGetWindowHeight());
 
+    // Background Music
+    backgroundMusic.load("background-music.mp3");
+    backgroundMusic.setLoop(true);
+    backgroundMusic.setVolume(0.5);
+    backgroundMusic.play();
 
     std::shared_ptr<Aquarium> myAquarium;
     std::shared_ptr<PlayerCreature> player;
