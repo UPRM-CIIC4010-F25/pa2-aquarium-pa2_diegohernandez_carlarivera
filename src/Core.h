@@ -87,6 +87,8 @@ public:
 
     float getX() const { return m_x; }
     float getY() const { return m_y; }
+    float getWidth() const { return m_width; } // width getter
+    float getHeight() const { return m_height; } // height getter
     int getSpeed() const { return m_speed; }
     void setSpeed(int speed) { m_speed = speed; }
     void setFlipped(bool flipped) {
@@ -100,6 +102,8 @@ public:
     void setBounds(int w, int h);
     void normalize();
     void bounce();
+    void setX(float x) { m_x = x; }
+    void setY(float y) { m_y = y; }
 };
 
 // GameEvents

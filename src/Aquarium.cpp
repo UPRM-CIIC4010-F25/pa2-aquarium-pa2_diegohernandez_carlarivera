@@ -32,7 +32,10 @@ void PlayerCreature::move() {
 
 void PlayerCreature::reduceDamageDebounce() {
     if (m_damage_debounce > 0) {
-        --m_damage_debounce;
+        m_damage_debounce -= 1;
+        m_x += m_dx * m_speed;
+        m_y += m_dy * m_speed;
+        this->bounce();
     }
 }
 
@@ -288,6 +291,10 @@ void AquariumGameScene::Update(){
                 if(this->m_player->getPower() < event->creatureB->getValue()){
                     ofLogNotice() << "Player is too weak to eat the creature!" << std::endl;
                     this->m_player->loseLife(3*60); // 3 frames debounce, 3 seconds at 60fps
+                    this->m_player->setDirection(-this->m_player->getDx(), -this->m_player->getDy());
+                    float pushback = 5.0f;
+                    this->m_player->setX(this->m_player->getX() + this->m_player->getDx() * pushback);
+                    this->m_player->setY(this->m_player->getY() + this->m_player->getDy() * pushback);
                     if(this->m_player->getLives() <= 0){
                         this->m_lastEvent = std::make_shared<GameEvent>(GameEventType::GAME_OVER, this->m_player, nullptr);
                         return;
