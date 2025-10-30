@@ -9,10 +9,12 @@ void ofApp::setup(){
     backgroundImage.resize(ofGetWindowWidth(), ofGetWindowHeight());
 
     // Background Music
-    backgroundMusic.load("background-music.mp3");
-    backgroundMusic.setLoop(true);
-    backgroundMusic.setVolume(0.5);
-    backgroundMusic.play();
+
+    m_music.load("background-music.mp3");
+    m_music.setLoop(true);
+    m_music.setVolume(0.5);
+    m_music.play();
+
 
     std::shared_ptr<Aquarium> myAquarium;
     std::shared_ptr<PlayerCreature> player;
@@ -71,8 +73,13 @@ void ofApp::update(){
     if(gameManager->GetActiveSceneName() == GameSceneKindToString(GameSceneKind::AQUARIUM_GAME)){
         auto gameScene = std::static_pointer_cast<AquariumGameScene>(gameManager->GetActiveScene());
         if(gameScene->GetLastEvent() != nullptr && gameScene->GetLastEvent()->isGameOver()){
+            gameOver = true;
             gameManager->Transition(GameSceneKindToString(GameSceneKind::GAME_OVER));
-            return;
+            if(m_music.isPlaying()) m_music.stop(); // stop game music
+            m_music.load("game-over.mp3"); // play game over audio
+            m_music.setLoop(false);
+            m_music.play();
+        return;
         }
         
     }

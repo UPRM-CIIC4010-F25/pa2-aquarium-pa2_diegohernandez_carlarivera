@@ -42,4 +42,9 @@ class ofApp : public ofBaseApp{
 		std::unique_ptr<GameSceneManager> gameManager;
 		std::shared_ptr<AquariumSpriteManager>spriteManager;
 		
+	// Music and Audio manager
+	private:
+		ofSoundPlayer m_music;
+		int currentLevel = 0;
+		bool gameOver = false;
 };

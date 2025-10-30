@@ -134,6 +134,46 @@ void BiggerFish::draw() const {
     this->m_sprite->draw(this->m_x, this->m_y);
 }
 
+// Power Up implementation
+PowerUp::PowerUp(float x, float y, std::shared_ptr<GameSprite> sprite, PowerUpType type)
+: Creature(x, y, 0, 0, 1, sprite), m_type(type) {}
+
+void PowerUp::update() {
+ // for movement like floating, etc
+}
+
+void PowerUp::move() {
+    m_y += sin(ofGetElapsedTimef() * 2) * 0.5f;
+}
+
+void PowerUp::draw() const {
+    if (m_sprite && !m_collected) {
+        m_sprite->draw(m_x, m_y);
+    }
+}
+
+void PowerUp::collect(std::shared_ptr<PlayerCreature> player) {
+    if (!m_collected) {
+        m_collected = true;
+        switch (m_type) {
+            case PowerUpType::SpeedBoost:
+                player->changeSpeed(player->getSpeed() + 2);
+                break;
+        }
+    }
+}
+
+bool PowerUp::shouldRemove() const {
+    return m_collected;
+}
+
+void Aquarium::SpawnPowerUp() {
+    int x = rand() % m_width;
+    int y = rand() % m_height;
+    auto sprite = std::make_shared<GameSprite>("fish-food.png", 40, 40);
+    m_powerups.push_back(std::make_shared<PowerUp>(x, y, sprite, PowerUpType::SpeedBoost));
+}
+
 
 // AquariumSpriteManager
 AquariumSpriteManager::AquariumSpriteManager(){
@@ -288,6 +328,19 @@ void AquariumGameScene::Update(){
             ofLogVerbose() << "Collision detected between player and NPC!" << std::endl;
             if(event->creatureB != nullptr){
                 event->print();
+                // update and collect powerups
+                for (auto& pu : m_aquarium->m_powerups) {
+                    pu->update();
+                    if (!pu->shouldRemove() && checkCollision(m_player, pu)) {
+                        pu->collect(m_player);
+                    }
+                }
+                // remove collected powerups
+                m_aquarium->m_powerups.erase(
+                    std::remove_if(m_aquarium->m_powerups.begin(), m_aquarium->m_powerups.end(),
+                                [](std::shared_ptr<PowerUp> p){ return p->shouldRemove(); }),
+                    m_aquarium->m_powerups.end()
+                );
                 if(this->m_player->getPower() < event->creatureB->getValue()){
                     ofLogNotice() << "Player is too weak to eat the creature!" << std::endl;
                     this->m_player->loseLife(3*60); // 3 frames debounce, 3 seconds at 60fps
@@ -309,8 +362,6 @@ void AquariumGameScene::Update(){
                     }
                     
                 }
-                
-                
 
             } else {
                 ofLogError() << "Error: creatureB is null in collision event." << std::endl;
