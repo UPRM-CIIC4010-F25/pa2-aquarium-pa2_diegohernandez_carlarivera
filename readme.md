@@ -24,8 +24,8 @@ Grading
 ## Team Info
 | Student Number | Student Name | Student Email |
 |-|-|-|
-|(STUDENT NUMBER HERE)| (STUDENT NAME HERE)| (STUDENT EMAIL HERE) |
-|(STUDENT NUMBER HERE)| (STUDENT NAME HERE)| (STUDENT EMAIL HERE) |
+|(802-21-8016)| (CARLA RIVERA DE JESÚS)| (CARLA.RIVERA32@UPR.EDU) |
+|(802-22-3454)| (DIEGO HERNÁNDEZ)| (DIEGO.HERNANDEZ21@UPR.EDU) |
 
 ---
 
@@ -37,3 +37,7 @@ If a partner has no commits in the repositories, they will receive a 0.
 
 # Student Notes
 If you have any bonus specs, bonus or any details the TA's should know, you should include it here:
+
+Bonus creature implemented in level 3: Predator creature - really wanted to add Jaws intro music :/
+Power-Up explanation: Fish Food can that enhances player creature's collision radius while active (fish is green when active)
+Introduced Game Over screen music

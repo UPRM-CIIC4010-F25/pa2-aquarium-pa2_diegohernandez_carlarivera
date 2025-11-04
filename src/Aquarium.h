@@ -155,6 +155,7 @@ public:
     int getWidth() const { return m_width; }
     int getHeight() const { return m_height; }
     void SpawnPowerUp(); // Power Up method
+    void setPlayer(std::shared_ptr<PlayerCreature> player) { m_player = player; }
     std::vector<std::shared_ptr<PowerUp>> m_powerups; // Power Up vector
 
 private:
@@ -166,6 +167,7 @@ private:
     std::vector<std::shared_ptr<Creature>> m_next_creatures;
     std::vector<std::shared_ptr<AquariumLevel>> m_aquariumlevels;
     std::shared_ptr<AquariumSpriteManager> m_sprite_manager;
+    std::shared_ptr<PlayerCreature> m_player;
 };
 
 

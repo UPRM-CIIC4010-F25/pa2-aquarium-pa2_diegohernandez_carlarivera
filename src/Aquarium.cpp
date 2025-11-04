@@ -183,19 +183,26 @@ private:
 
 class Shark : public NPCreature {
 public:
-   Shark(float x, float y, int speed, std::shared_ptr<GameSprite> sprite)
-   : NPCreature(x, y, speed, sprite) { m_value = 10; }
-   void move() override {
-    float px = ofGetMouseX(), py = ofGetMouseY();
-    float vx = px - m_x, vy = py - m_y;
-    float L = std::max(1.0f, std::sqrt(vx* vx + vy * vy));
-    m_dx = vx / L; m_dy = vy / L;
-    m_x += m_dx * (m_speed + 2);
-    m_y += m_dy * (m_speed + 2);
-    if (m_dx < 0) m_sprite->setFlipped(true); else m_sprite->setFlipped(false);
-    bounce();
-
-   }
+    Shark(float x, float y, int speed, std::shared_ptr<GameSprite> sprite)
+        : NPCreature(x, y, speed, sprite) {
+        m_value = 10;
+        m_creatureType = AquariumCreatureType::Shark;
+    }
+    //chases the player 
+    void move(std::shared_ptr<PlayerCreature> player) {
+        if (!player) return; // safety check
+        float px = player->getX();
+        float py = player->getY();
+        float vx = px - m_x;
+        float vy = py - m_y;
+        float L = std::max(1.0f, std::sqrt(vx * vx + vy * vy));
+        m_dx = vx / L;
+        m_dy = vy / L;
+        m_x += m_dx * (m_speed + 2);
+        m_y += m_dy * (m_speed + 2);
+        m_sprite->setFlipped(m_dx < 0);
+        bounce();
+    }
 };
 
 
@@ -294,7 +301,11 @@ void Aquarium::addAquariumLevel(std::shared_ptr<AquariumLevel> level){
 
 void Aquarium::update() {
     for (auto& creature : m_creatures) {
-        creature->move();
+        if (auto shark = std::dynamic_pointer_cast<Shark>(creature)) {
+            shark->move(m_player); // Sharks chase the player
+        } else {
+            creature->move();    // All others move normally
+        }
     }
     
     for (auto& p : m_powerups) p->update();
@@ -403,14 +414,25 @@ void Aquarium::Repopulate() {
     std::shared_ptr<AquariumLevel> level = this->m_aquariumlevels.at(selectedLevelIdx);
 
 
-    if(level->isCompleted()){
-        level->levelReset();
+if (level->isCompleted()) {
+    level->levelReset();
+
+    // Advance only if we haven't reached the last level yet
+    if (this->currentLevel + 1 < (int)this->m_aquariumlevels.size()) {
         this->currentLevel += 1;
-        selectedLevelIdx = this->currentLevel % this->m_aquariumlevels.size();
-        ofLogNotice()<<"new level reached : " << selectedLevelIdx << std::endl;
+        selectedLevelIdx = this->currentLevel; // no modulo wrap
+        ofLogNotice() << "new level reached : " << selectedLevelIdx << std::endl;
+
         level = this->m_aquariumlevels.at(selectedLevelIdx);
         this->clearCreatures();
+    } else {
+        // Reached final level — stop cycling
+        ofLogNotice() << "Final level reached (" << this->currentLevel << ")" << std::endl;
+        // Optionally: keep repopulating last level instead of resetting to 0
+        level->levelReset();
+        // currentLevel stays the same here
     }
+}
 
     
     // now lets find how many to respawn if needed 
@@ -441,6 +463,7 @@ std::shared_ptr<GameEvent> DetectAquariumCollisions(std::shared_ptr<Aquarium> aq
 void AquariumGameScene::Update(){
 
     std::shared_ptr<GameEvent> event;
+    m_aquarium->setPlayer(m_player);
 
     this->m_player->update();
     static AwaitFrames powerupTimer(10 * 60);
